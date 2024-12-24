@@ -13,17 +13,19 @@ import 'package:tabbed_view/src/theme/tabs_area_theme_data.dart';
 /// Displays the popup menu button for tabs hidden due to lack of space.
 /// The selected [TabWidget] will always be visible.
 class TabsAreaLayout extends MultiChildRenderObjectWidget {
-  TabsAreaLayout(
-      {Key? key,
-      required List<Widget> children,
-      required this.theme,
-      required this.hiddenTabs,
-      required this.selectedTabIndex})
-      : super(key: key, children: children);
+  TabsAreaLayout({
+    Key? key,
+    required List<Widget> children,
+    required this.theme,
+    required this.hiddenTabs,
+    required this.selectedTabIndex,
+    required this.disableMenuButton,
+  }) : super(key: key, children: children);
 
   final TabbedViewThemeData theme;
   final HiddenTabs hiddenTabs;
   final int? selectedTabIndex;
+  final bool disableMenuButton;
 
   @override
   _TabsAreaLayoutElement createElement() {

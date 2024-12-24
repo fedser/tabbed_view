@@ -44,8 +44,9 @@ class TabButtonWidgetState extends State<TabButtonWidget> {
     Color color;
     BoxDecoration? background;
 
-    bool hasEvent =
-        widget.button.onPressed != null || widget.button.menuBuilder != null;
+    bool hasEvent = widget.button.onPressed != null ||
+        widget.button.menuBuilder != null ||
+        widget.button.onTapDown != null;
     bool isDisabled = hasEvent == false || widget.enabled == false;
     if (isDisabled) {
       color = widget.button.disabledColor != null
@@ -109,7 +110,11 @@ class TabButtonWidgetState extends State<TabButtonWidget> {
         cursor: SystemMouseCursors.click,
         onEnter: _onEnter,
         onExit: _onExit,
-        child: GestureDetector(child: icon, onTap: onPressed));
+        child: GestureDetector(
+          child: icon,
+          onTap: onPressed,
+          onTapDown: widget.button.onTapDown,
+        ));
   }
 
   void _onEnter(PointerEnterEvent event) {

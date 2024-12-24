@@ -9,9 +9,14 @@ import 'package:tabbed_view/src/internal/tabs_area/tabs_area_buttons_widget.dart
 class TabsAreaCorner extends StatelessWidget {
   final TabbedViewProvider provider;
   final HiddenTabs hiddenTabs;
+  final bool disableMenuButton;
 
-  const TabsAreaCorner(
-      {super.key, required this.provider, required this.hiddenTabs});
+  const TabsAreaCorner({
+    super.key,
+    required this.provider,
+    required this.hiddenTabs,
+    required this.disableMenuButton,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +28,11 @@ class TabsAreaCorner extends StatelessWidget {
         padding: EdgeInsets.only(left: DropTabWidget.dropWidth),
         child: Row(
             children: [
-              TabsAreaButtonsWidget(provider: provider, hiddenTabs: hiddenTabs)
+              TabsAreaButtonsWidget(
+                provider: provider,
+                hiddenTabs: hiddenTabs,
+                disableMenuButton: disableMenuButton,
+              )
             ],
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.end));

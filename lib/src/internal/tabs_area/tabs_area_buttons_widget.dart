@@ -15,9 +15,14 @@ import 'package:tabbed_view/src/theme/theme_widget.dart';
 class TabsAreaButtonsWidget extends StatelessWidget {
   final TabbedViewProvider provider;
   final HiddenTabs hiddenTabs;
+  final bool disableMenuButton;
 
-  const TabsAreaButtonsWidget(
-      {super.key, required this.provider, required this.hiddenTabs});
+  const TabsAreaButtonsWidget({
+    super.key,
+    required this.provider,
+    required this.hiddenTabs,
+    required this.disableMenuButton,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +34,7 @@ class TabsAreaButtonsWidget extends StatelessWidget {
       buttons = provider.tabsAreaButtonsBuilder!(
           context, provider.controller.tabs.length);
     }
-    if (hiddenTabs.hasHiddenTabs) {
+    if (hiddenTabs.hasHiddenTabs && !disableMenuButton) {
       buttons.insert(
           0,
           TabButton(

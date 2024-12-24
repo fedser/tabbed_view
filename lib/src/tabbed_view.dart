@@ -39,21 +39,23 @@ typedef OnTabSelection = Function(int? newTabIndex);
 ///   selected. The default value is [TRUE].
 /// * [closeButtonTooltip]: optional tooltip for the close button.
 class TabbedView extends StatefulWidget {
-  TabbedView(
-      {required this.controller,
-      this.contentBuilder,
-      this.onTabClose,
-      this.tabCloseInterceptor,
-      this.onTabSelection,
-      this.tabSelectInterceptor,
-      this.selectToEnableButtons = true,
-      this.contentClip = true,
-      this.closeButtonTooltip,
-      this.tabsAreaButtonsBuilder,
-      this.tabsAreaVisible,
-      this.onDraggableBuild,
-      this.canDrop,
-      this.onBeforeDropAccept});
+  TabbedView({
+    required this.controller,
+    this.contentBuilder,
+    this.onTabClose,
+    this.tabCloseInterceptor,
+    this.onTabSelection,
+    this.tabSelectInterceptor,
+    this.selectToEnableButtons = true,
+    this.contentClip = true,
+    this.closeButtonTooltip,
+    this.tabsAreaButtonsBuilder,
+    this.tabsAreaVisible,
+    this.onDraggableBuild,
+    this.canDrop,
+    this.onBeforeDropAccept,
+    this.disableMenuButton = false,
+  });
 
   final TabbedViewController controller;
   final bool contentClip;
@@ -69,6 +71,7 @@ class TabbedView extends StatefulWidget {
   final OnDraggableBuild? onDraggableBuild;
   final CanDrop? canDrop;
   final OnBeforeDropAccept? onBeforeDropAccept;
+  final bool disableMenuButton;
 
   @override
   State<StatefulWidget> createState() => _TabbedViewState();
@@ -124,7 +127,10 @@ class _TabbedViewState extends State<TabbedView> {
         widget.tabsAreaVisible ?? theme.tabsArea.visible;
     List<LayoutId> children = [];
     if (tabsAreaVisible) {
-      Widget tabArea = TabsArea(provider: provider);
+      Widget tabArea = TabsArea(
+        provider: provider,
+        disableMenuButton: widget.disableMenuButton,
+      );
       children.add(LayoutId(id: 1, child: tabArea));
     }
     ContentArea contentArea =

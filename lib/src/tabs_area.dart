@@ -12,9 +12,13 @@ import 'package:tabbed_view/src/theme/theme_widget.dart';
 
 /// Widget for the tabs and buttons.
 class TabsArea extends StatefulWidget {
-  const TabsArea({required this.provider});
+  const TabsArea({
+    required this.provider,
+    required this.disableMenuButton,
+  });
 
   final TabbedViewProvider provider;
+  final bool disableMenuButton;
 
   @override
   State<StatefulWidget> createState() => _TabsAreaState();
@@ -43,14 +47,19 @@ class _TabsAreaState extends State<TabsArea> {
           onClose: _onTabClose));
     }
 
-    children.add(
-        TabsAreaCorner(provider: widget.provider, hiddenTabs: _hiddenTabs));
+    children.add(TabsAreaCorner(
+      provider: widget.provider,
+      hiddenTabs: _hiddenTabs,
+      disableMenuButton: widget.disableMenuButton,
+    ));
 
     Widget tabsAreaLayout = TabsAreaLayout(
-        children: children,
-        theme: theme,
-        hiddenTabs: _hiddenTabs,
-        selectedTabIndex: controller.selectedIndex);
+      children: children,
+      theme: theme,
+      hiddenTabs: _hiddenTabs,
+      selectedTabIndex: controller.selectedIndex,
+      disableMenuButton: widget.disableMenuButton,
+    );
     tabsAreaLayout = ClipRect(child: tabsAreaLayout);
 
     Decoration? decoration;
