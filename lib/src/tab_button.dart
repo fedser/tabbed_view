@@ -14,6 +14,7 @@ class TabButton {
       this.hoverBackground,
       this.disabledBackground,
       this.onPressed,
+      this.onTapDown,
       this.menuBuilder,
       this.toolTip,
       this.padding,
@@ -31,6 +32,7 @@ class TabButton {
   final BoxDecoration? hoverBackground;
   final BoxDecoration? disabledBackground;
   final VoidCallback? onPressed;
+  final GestureTapDownCallback? onTapDown;
   final TabbedViewMenuBuilder? menuBuilder;
   final String? toolTip;
   final double? iconSize;
