@@ -159,6 +159,8 @@ class _TabbedViewState extends State<TabbedView> {
   void _rebuildByTabOrSelection() {
     int? newTabIndex = widget.controller.selectedIndex;
     if (_lastSelectedIndex != newTabIndex) {
+      assert(_lastSelectedIndex == null ||
+          _lastSelectedIndex! < widget.controller.tabs.length);
       _lastSelectedIndex = newTabIndex;
       if (widget.onTabSelection != null) {
         widget.onTabSelection!(newTabIndex);

@@ -56,6 +56,22 @@ class TabWidget extends StatelessWidget {
         tabTheme.innerTopBorder ??
         BorderSide.none;
     BoxDecoration? decoration = statusTheme.decoration ?? tabTheme.decoration;
+    final customBorderSide =
+        provider.controller.getCustomBorderSideForTabWithId(tab.id);
+    if (customBorderSide != null) {
+      if (innerBottomBorder.style != BorderStyle.none) {
+        innerBottomBorder = customBorderSide;
+      }
+      if (innerTopBorder.style != BorderStyle.none) {
+        innerTopBorder = customBorderSide;
+      }
+      final customBorder = Border(
+          top: customBorderSide,
+          left: customBorderSide,
+          right: customBorderSide);
+      decoration = decoration?.copyWith(border: customBorder) ??
+          BoxDecoration(border: customBorder);
+    }
 
     EdgeInsetsGeometry? padding;
     if (textAndButtons.length == 1) {

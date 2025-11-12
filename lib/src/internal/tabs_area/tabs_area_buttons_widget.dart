@@ -75,13 +75,19 @@ class TabsAreaButtonsWidget extends StatelessWidget {
       margin = EdgeInsets.only(left: tabsAreaTheme.buttonsOffset);
     }
 
+    BoxDecoration? buttonsAreaDecoration = tabsAreaTheme.buttonsAreaDecoration;
+    if (provider.controller.containsCustomBorderTab() &&
+        provider.controller.customBorderSide != null) {
+      buttonsAreaDecoration = buttonsAreaDecoration?.copyWith(
+          border: Border.fromBorderSide(provider.controller.customBorderSide!));
+    }
     if (children.isNotEmpty &&
-        (tabsAreaTheme.buttonsAreaDecoration != null ||
+        (buttonsAreaDecoration != null ||
             tabsAreaTheme.buttonsAreaPadding != null ||
             margin != null)) {
       buttonsArea = Container(
           child: buttonsArea,
-          decoration: tabsAreaTheme.buttonsAreaDecoration,
+          decoration: buttonsAreaDecoration,
           padding: tabsAreaTheme.buttonsAreaPadding,
           margin: margin);
     }

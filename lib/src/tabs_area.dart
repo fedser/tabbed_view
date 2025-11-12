@@ -29,6 +29,40 @@ class _TabsAreaState extends State<TabsArea> {
   int? _highlightedIndex;
 
   final HiddenTabs _hiddenTabs = HiddenTabs();
+  dynamic _lastSelectedCustomBorderTabId;
+
+  @override
+  void initState() {
+    super.initState();
+    _lastSelectedCustomBorderTabId =
+        widget.provider.controller.customBorderTabId;
+    widget.provider.controller.addListener(_rebuildByTabOrSelection);
+  }
+
+  @override
+  void dispose() {
+    widget.provider.controller.removeListener(_rebuildByTabOrSelection);
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant TabsArea oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.provider.controller != oldWidget.provider.controller) {
+      oldWidget.provider.controller.removeListener(_rebuildByTabOrSelection);
+      widget.provider.controller.addListener(_rebuildByTabOrSelection);
+      _lastSelectedCustomBorderTabId =
+          widget.provider.controller.customBorderTabId;
+    }
+  }
+
+  void _rebuildByTabOrSelection() {
+    dynamic newCustomBorderTabId = widget.provider.controller.customBorderTabId;
+    if (_lastSelectedCustomBorderTabId != newCustomBorderTabId) {
+      _lastSelectedCustomBorderTabId = newCustomBorderTabId;
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,19 +87,26 @@ class _TabsAreaState extends State<TabsArea> {
       disableMenuButton: widget.disableMenuButton,
     ));
 
+    final customBorderSide = controller.containsCustomBorderTab()
+        ? controller.customBorderSide
+        : null;
     Widget tabsAreaLayout = TabsAreaLayout(
       children: children,
       theme: theme,
       hiddenTabs: _hiddenTabs,
       selectedTabIndex: controller.selectedIndex,
       disableMenuButton: widget.disableMenuButton,
+      customBorderSide: customBorderSide,
     );
     tabsAreaLayout = ClipRect(child: tabsAreaLayout);
 
     Decoration? decoration;
     if (tabsAreaTheme.color != null || tabsAreaTheme.border != null) {
-      decoration = BoxDecoration(
-          color: tabsAreaTheme.color, border: tabsAreaTheme.border);
+      final border = (customBorderSide != null
+              ? Border.fromBorderSide(customBorderSide)
+              : null) ??
+          tabsAreaTheme.border;
+      decoration = BoxDecoration(color: tabsAreaTheme.color, border: border);
     }
     return Container(child: tabsAreaLayout, decoration: decoration);
   }

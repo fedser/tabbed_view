@@ -33,6 +33,7 @@ import 'package:tabbed_view/src/tabbed_view_controller.dart';
 class TabData extends ChangeNotifier with TabIndex {
   TabData(
       {dynamic value,
+      required this.id,
       required String text,
       List<TabButton>? buttons,
       Widget? content,
@@ -51,6 +52,7 @@ class TabData extends ChangeNotifier with TabIndex {
         key = keepAlive ? GlobalKey() : UniqueKey();
 
   /// Identifies the content of the tab in the tree
+  final dynamic id;
   final Key key;
   final bool keepAlive;
 

@@ -73,11 +73,25 @@ class ContentArea extends StatelessWidget {
       Widget listener = NotificationListener<SizeChangedLayoutNotification>(
           child: SizeChangedLayoutNotifier(child: Stack(children: children)),
           onNotification: onSizeNotification);
-      return Container(
-          child: listener,
-          decoration: tabsAreaVisible
-              ? contentAreaTheme.decoration
-              : contentAreaTheme.decorationNoTabsArea);
+
+      var decoraion = tabsAreaVisible
+          ? contentAreaTheme.decoration
+          : contentAreaTheme.decorationNoTabsArea;
+      final customBorderSide = controller.containsCustomBorderTab()
+          ? controller.customBorderSide
+          : null;
+      ;
+      if (customBorderSide != null) {
+        final customBorder = tabsAreaVisible
+            ? Border(
+                left: customBorderSide,
+                right: customBorderSide,
+                bottom: customBorderSide)
+            : Border.fromBorderSide(customBorderSide);
+        decoraion = decoraion?.copyWith(border: customBorder) ??
+            BoxDecoration(border: customBorder);
+      }
+      return Container(child: listener, decoration: decoraion);
     });
     if (provider.contentClip) {
       return ClipRect(child: layoutBuilder);

@@ -20,12 +20,14 @@ class TabsAreaLayout extends MultiChildRenderObjectWidget {
     required this.hiddenTabs,
     required this.selectedTabIndex,
     required this.disableMenuButton,
+    required this.customBorderSide,
   }) : super(key: key, children: children);
 
   final TabbedViewThemeData theme;
   final HiddenTabs hiddenTabs;
   final int? selectedTabIndex;
   final bool disableMenuButton;
+  final BorderSide? customBorderSide;
 
   @override
   _TabsAreaLayoutElement createElement() {
@@ -34,7 +36,8 @@ class TabsAreaLayout extends MultiChildRenderObjectWidget {
 
   @override
   _TabsAreaLayoutRenderBox createRenderObject(BuildContext context) {
-    return _TabsAreaLayoutRenderBox(theme, hiddenTabs, selectedTabIndex);
+    return _TabsAreaLayoutRenderBox(
+        theme, hiddenTabs, selectedTabIndex, customBorderSide);
   }
 
   @override
@@ -43,6 +46,7 @@ class TabsAreaLayout extends MultiChildRenderObjectWidget {
     renderObject..tabsAreaTheme = theme.tabsArea;
     renderObject..hiddenTabs = hiddenTabs;
     renderObject..selectedTabIndex = selectedTabIndex;
+    renderObject..customBorderSide = customBorderSide;
 
     //renderObject.markNeedsLayoutForSizedByParentChange()
   }
@@ -71,21 +75,33 @@ class _TabsAreaLayoutRenderBox extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, TabsAreaLayoutParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, TabsAreaLayoutParentData> {
-  _TabsAreaLayoutRenderBox(
-      TabbedViewThemeData theme, HiddenTabs hiddenTabs, int? selectedTabIndex)
+  _TabsAreaLayoutRenderBox(TabbedViewThemeData theme, HiddenTabs hiddenTabs,
+      int? selectedTabIndex, BorderSide? customBorderSide)
       : this._tabsAreaTheme = theme.tabsArea,
         this._hiddenTabs = hiddenTabs,
-        this._selectedTabIndex = selectedTabIndex;
+        this._selectedTabIndex = selectedTabIndex,
+        this._customBorderSide = customBorderSide;
 
   int? _selectedTabIndex;
+  BorderSide? _customBorderSide;
 
   int? get selectedTabIndex => _selectedTabIndex;
+
+  BorderSide _getProperGapBottomBorder() =>
+      _customBorderSide ?? tabsAreaTheme.gapBottomBorder;
 
   late RenderBox _corner;
 
   set selectedTabIndex(int? value) {
     if (_selectedTabIndex != value) {
       _selectedTabIndex = value;
+      markNeedsLayout();
+    }
+  }
+
+  set customBorderSide(BorderSide? value) {
+    if (_customBorderSide != value) {
+      _customBorderSide = value;
       markNeedsLayout();
     }
   }
@@ -154,9 +170,9 @@ class _TabsAreaLayoutRenderBox extends RenderBox
       visibleTabs.add(child);
     }
 
-    if (tabsAreaTheme.gapBottomBorder.style == BorderStyle.solid &&
-        tabsAreaTheme.gapBottomBorder.width > 0) {
-      height = math.max(height, tabsAreaTheme.gapBottomBorder.width);
+    if (_getProperGapBottomBorder().style == BorderStyle.solid &&
+        _getProperGapBottomBorder().width > 0) {
+      height = math.max(height, _getProperGapBottomBorder().width);
     }
 
     double availableWidth = math.max(
@@ -307,21 +323,21 @@ class _TabsAreaLayoutRenderBox extends RenderBox
     Canvas canvas = context.canvas;
 
     Paint? gapBorderPaint;
-    if (tabsAreaTheme.gapBottomBorder.style == BorderStyle.solid &&
-        tabsAreaTheme.gapBottomBorder.width > 0) {
+    if (_getProperGapBottomBorder().style == BorderStyle.solid &&
+        _getProperGapBottomBorder().width > 0) {
       gapBorderPaint = Paint()
         ..style = PaintingStyle.fill
-        ..color = tabsAreaTheme.gapBottomBorder.color;
+        ..color = _getProperGapBottomBorder().color;
     }
     double top = offset.dy;
     double left = offset.dx;
-    double topGap = top + size.height - tabsAreaTheme.gapBottomBorder.width;
+    double topGap = top + size.height - _getProperGapBottomBorder().width;
 
     // initial gap
     if (tabsAreaTheme.initialGap > 0 && gapBorderPaint != null) {
       canvas.drawRect(
           Rect.fromLTWH(left, topGap, tabsAreaTheme.initialGap,
-              tabsAreaTheme.gapBottomBorder.width),
+              _getProperGapBottomBorder().width),
           gapBorderPaint);
     }
     left += tabsAreaTheme.initialGap;
@@ -336,7 +352,7 @@ class _TabsAreaLayoutRenderBox extends RenderBox
         if (tabsAreaTheme.middleGap > 0 && gapBorderPaint != null) {
           canvas.drawRect(
               Rect.fromLTWH(left, topGap, tabsAreaTheme.middleGap,
-                  tabsAreaTheme.gapBottomBorder.width),
+                  _getProperGapBottomBorder().width),
               gapBorderPaint);
         }
         left += tabsAreaTheme.middleGap;
@@ -361,8 +377,8 @@ class _TabsAreaLayoutRenderBox extends RenderBox
       }
       if (lastGapWidth > 0) {
         canvas.drawRect(
-            Rect.fromLTWH(lastX, topGap, lastGapWidth,
-                tabsAreaTheme.gapBottomBorder.width),
+            Rect.fromLTWH(
+                lastX, topGap, lastGapWidth, _getProperGapBottomBorder().width),
             gapBorderPaint);
       }
     }

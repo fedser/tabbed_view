@@ -1,10 +1,22 @@
+import 'dart:async';
 import 'dart:collection';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:tabbed_view/src/tab_data.dart';
 
 /// Event that will be triggered when the tab is reorder.
 typedef OnReorder = void Function(int oldIndex, int newIndex);
+
+class CustomBorderTabInfo {
+  final BorderSide customBorderSide;
+  final dynamic Function() getCustomBorderTabIdCallback;
+  final Stream<dynamic> customBorderTabChangesStream;
+
+  const CustomBorderTabInfo(
+      {required this.customBorderSide,
+      required this.getCustomBorderTabIdCallback,
+      required this.customBorderTabChangesStream});
+}
 
 /// The [TabbedView] controller.
 ///
@@ -14,18 +26,49 @@ typedef OnReorder = void Function(int oldIndex, int newIndex);
 ///
 /// Remember to dispose of the [TabbedView] when it is no longer needed. This will ensure we discard any resources used by the object.
 class TabbedViewController extends ChangeNotifier {
-  TabbedViewController(this._tabs,
-      {this.onReorder, this.data, bool reorderEnable = true})
-      : this._reorderEnable = reorderEnable {
+  TabbedViewController(
+    this._tabs, {
+    this.onReorder,
+    this.data,
+    bool reorderEnable = true,
+    // required dynamic customBorderTabId,
+    required CustomBorderTabInfo? customBorderTabInfo,
+  })  : this._reorderEnable = reorderEnable,
+        this._customBorderSide = customBorderTabInfo?.customBorderSide,
+        this._customBorderTabId =
+            customBorderTabInfo?.getCustomBorderTabIdCallback() {
     if (_tabs.isNotEmpty) {
       _selectedIndex = 0;
+      if (_customBorderTabId != null) {
+        final newIndex =
+            _tabs.indexWhere((tab) => tab.id == _customBorderTabId);
+        if (newIndex != -1) {
+          _selectedIndex = newIndex;
+        }
+      }
     }
     for (TabData tab in _tabs) {
       tab.addListener(notifyListeners);
     }
     _updateIndexes(false);
+    if (customBorderTabInfo != null) {
+      _customBorderTabChangesStreamSubscription =
+          customBorderTabInfo.customBorderTabChangesStream.listen(
+        (updatedCustomBorderTabId) {
+          this.customBorderTabId = updatedCustomBorderTabId;
+        },
+      );
+    }
   }
 
+  @override
+  void dispose() {
+    _customBorderTabChangesStreamSubscription?.cancel();
+    removeTabs();
+    super.dispose();
+  }
+
+  StreamSubscription? _customBorderTabChangesStreamSubscription;
   final List<TabData> _tabs;
   UnmodifiableListView<TabData> get tabs => UnmodifiableListView(_tabs);
 
@@ -54,6 +97,57 @@ class TabbedViewController extends ChangeNotifier {
     }
     _selectedIndex = tabIndex;
     notifyListeners();
+  }
+
+  BorderSide? getCustomBorderSideForTabWithId(dynamic tabId) {
+    // return customBorderSide;
+    if (tabId != null &&
+        customBorderTabId != null &&
+        customBorderTabId == tabId) {
+      return _customBorderSide;
+    } else {
+      return null;
+    }
+  }
+
+  BorderSide? _customBorderSide;
+  BorderSide? get customBorderSide => _customBorderSide;
+
+  set customBorderSide(BorderSide? borderSide) {
+    if (_customBorderSide != borderSide) {
+      _customBorderSide = borderSide;
+      notifyListeners();
+    }
+  }
+
+  dynamic _customBorderTabId;
+  dynamic get customBorderTabId => _customBorderTabId;
+
+  set customBorderTabId(dynamic tabId) {
+    if (_customBorderTabId != tabId) {
+      final shouldNotify =
+          _containsTabWithId(_customBorderTabId) || _containsTabWithId(tabId);
+      _customBorderTabId = tabId;
+      if (shouldNotify) {
+        if (_containsTabWithId(_customBorderTabId)) {
+          final tabIndex =
+              _tabs.indexWhere((tab) => tab.id == _customBorderTabId);
+          if (tabIndex != -1 && selectedIndex != tabIndex) {
+            selectedIndex = tabIndex;
+          } else {
+            notifyListeners();
+          }
+        } else {
+          notifyListeners();
+        }
+      }
+    }
+  }
+
+  bool containsCustomBorderTab() =>
+      _customBorderTabId != null && _containsTabWithId(_customBorderTabId);
+  bool _containsTabWithId(dynamic tabId) {
+    return tabId != null && tabs.any((tab) => tab.id == tabId);
   }
 
   /// Gets the selected tab.
@@ -153,6 +247,11 @@ class TabbedViewController extends ChangeNotifier {
   void _afterIncTabs() {
     if (_tabs.length == 1) {
       _selectedIndex = 0;
+    } else if (_customBorderTabId != null) {
+      final tabIndex = _tabs.indexWhere((tab) => tab.id == _customBorderTabId);
+      if (tabIndex != -1) {
+        _selectedIndex = tabIndex;
+      }
     }
     notifyListeners();
   }
