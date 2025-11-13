@@ -41,12 +41,18 @@ class TabbedViewThemeData {
   }
 
   /// Builds the predefined classic theme.
-  factory TabbedViewThemeData.classic(
-      {MaterialColor colorSet = Colors.grey,
-      double fontSize = 13,
-      Color borderColor = Colors.black}) {
+  factory TabbedViewThemeData.classic({
+    MaterialColor colorSet = Colors.grey,
+    double fontSize = 13,
+    Color borderColor = Colors.black,
+    Color borderColorForTab = Colors.black,
+  }) {
     return ClassicTheme.build(
-        colorSet: colorSet, fontSize: fontSize, borderColor: borderColor);
+      colorSet: colorSet,
+      fontSize: fontSize,
+      borderColor: borderColor,
+      borderColorForTab: borderColorForTab,
+    );
   }
 
   /// Builds the predefined mobile theme.

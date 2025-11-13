@@ -102,10 +102,23 @@ class _TabsAreaState extends State<TabsArea> {
 
     Decoration? decoration;
     if (tabsAreaTheme.color != null || tabsAreaTheme.border != null) {
-      final border = (customBorderSide != null
-              ? Border.fromBorderSide(customBorderSide)
-              : null) ??
-          tabsAreaTheme.border;
+      final border = (customBorderSide != null && tabsAreaTheme.border != null)
+          ? Border(
+              top: tabsAreaTheme.border?.top == BorderSide.none
+                  ? BorderSide.none
+                  : customBorderSide,
+              right: tabsAreaTheme.border?.right == BorderSide.none
+                  ? BorderSide.none
+                  : customBorderSide,
+              bottom: tabsAreaTheme.border?.bottom == BorderSide.none
+                  ? BorderSide.none
+                  : customBorderSide,
+              left: tabsAreaTheme.border?.left == BorderSide.none
+                  ? BorderSide.none
+                  : customBorderSide,
+            )
+          : tabsAreaTheme.border;
+
       decoration = BoxDecoration(color: tabsAreaTheme.color, border: border);
     }
     return Container(child: tabsAreaLayout, decoration: decoration);

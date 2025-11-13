@@ -56,21 +56,37 @@ class TabWidget extends StatelessWidget {
         tabTheme.innerTopBorder ??
         BorderSide.none;
     BoxDecoration? decoration = statusTheme.decoration ?? tabTheme.decoration;
-    final customBorderSide =
-        provider.controller.getCustomBorderSideForTabWithId(tab.id);
-    if (customBorderSide != null) {
-      if (innerBottomBorder.style != BorderStyle.none) {
-        innerBottomBorder = customBorderSide;
-      }
-      if (innerTopBorder.style != BorderStyle.none) {
-        innerTopBorder = customBorderSide;
-      }
-      final customBorder = Border(
+    if (provider.controller.containsCustomBorderTab() &&
+        provider.controller.customBorderSide != null) {
+      final customBorderSide =
+          provider.controller.getCustomBorderSideForTabWithId(tab.id);
+      if (customBorderSide != null) {
+        if (innerBottomBorder.style != BorderStyle.none) {
+          innerBottomBorder = customBorderSide;
+        }
+        if (innerTopBorder.style != BorderStyle.none) {
+          innerTopBorder = customBorderSide;
+        }
+        final customBorder = Border(
           top: customBorderSide,
           left: customBorderSide,
-          right: customBorderSide);
-      decoration = decoration?.copyWith(border: customBorder) ??
-          BoxDecoration(border: customBorder);
+          right: customBorderSide,
+        );
+        decoration = decoration?.copyWith(border: customBorder) ??
+            BoxDecoration(border: customBorder);
+      } else {
+        final currentBorder = decoration?.border;
+        if (currentBorder != null) {
+          decoration = decoration?.copyWith(
+            border: Border(
+              top: currentBorder.top,
+              bottom: provider.controller.customBorderSide!,
+              left: currentBorder.top,
+              right: currentBorder.top,
+            ),
+          );
+        }
+      }
     }
 
     EdgeInsetsGeometry? padding;

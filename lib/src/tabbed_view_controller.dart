@@ -100,7 +100,6 @@ class TabbedViewController extends ChangeNotifier {
   }
 
   BorderSide? getCustomBorderSideForTabWithId(dynamic tabId) {
-    // return customBorderSide;
     if (tabId != null &&
         customBorderTabId != null &&
         customBorderTabId == tabId) {

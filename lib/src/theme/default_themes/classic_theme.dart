@@ -8,10 +8,12 @@ import 'package:tabbed_view/src/theme/tabs_area_theme_data.dart';
 
 /// Predefined classic theme builder.
 class ClassicTheme {
-  static TabbedViewThemeData build(
-      {required MaterialColor colorSet,
-      required double fontSize,
-      required Color borderColor}) {
+  static TabbedViewThemeData build({
+    required MaterialColor colorSet,
+    required double fontSize,
+    required Color borderColor,
+    required Color? borderColorForTab,
+  }) {
     Color backgroundColor = colorSet[50]!;
     Color highlightedColor = colorSet[300]!;
     Color fontColor = colorSet[900]!;
@@ -31,7 +33,7 @@ class ClassicTheme {
             fontSize: fontSize,
             fontColor: fontColor),
         tab: tabTheme(
-            borderColor: borderColor,
+            borderColor: borderColorForTab ?? borderColor,
             normalButtonColor: normalButtonColor,
             hoverButtonColor: hoverButtonColor,
             disabledButtonColor: disabledButtonColor,
@@ -40,7 +42,9 @@ class ClassicTheme {
             backgroundColor: backgroundColor,
             highlightedColor: highlightedColor),
         contentArea: contentAreaTheme(
-            borderColor: borderColor, backgroundColor: backgroundColor),
+          borderColor: borderColor,
+          backgroundColor: backgroundColor,
+        ),
         menu: menuTheme(
             hoverColor: menuHoverColor,
             color: backgroundColor,
